@@ -227,7 +227,7 @@ def dict_allowlist(
                     )
 
                     list_nb.append(nbf.v4.new_code_cell(code))
-                allowlist[f"${i}.${t.__name__}"] = string
+                allowlist[f"{i}.{t.__name__}"] = string
     return allowlist, debug_list, methods_error_count, missing_return, list_nb
 
 
@@ -286,8 +286,8 @@ def generate_package_support(
             missing_return_i,
             list_nb_i,
         ) = dict_allowlist(class_)
-        allowlist += allowlist_i # append to list
-
+        allowlist = {**allowlist, **allowlist_i}  # merging dicts 
+        
         debug_list.extend(debug_list_i)
         if len(list_nb_i) > 0:
             nb = nbf.v4.new_notebook()
