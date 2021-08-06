@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any as TypeAny
+from typing import Union
 from typing import Dict as TypeDict
 from typing import Iterable
 from typing import List as TypeList
@@ -14,7 +15,7 @@ from typing import Tuple as TypeTuple
 import syft as sy
 
 
-def read_package_support() -> TypeDict[str, TypeList[TypeTuple[TypeAny, ...]]]:
+def read_package_support() -> TypeDict[str, Union[TypeList[TypeTuple[TypeAny, ...]],TypeDict[str,str]]]:
     with open(
         os.path.join(os.path.dirname(__file__), "package-support.json"), "r"
     ) as f:

@@ -23,6 +23,7 @@ import wrapt
 # syft relative
 from ..ast import add_classes
 from ..ast import add_methods
+from ..ast import add_methods_dict
 from ..ast import add_modules
 from ..ast.globals import Globals
 from ..core.node.abstract.node import AbstractNodeClient
@@ -283,8 +284,8 @@ def post_import_hook_third_party(module: TypeAny) -> None:
 
 
 def _map2syft_types(
-    methods: TypeList[TypeTuple[str, str]]
-) -> TypeList[TypeTuple[str, str]]:
+    methods: TypeUnion[TypeList[TypeTuple[str, str]], TypeDict[str, str]]
+) -> TypeUnion[TypeList[TypeTuple[str, str]], TypeDict[str, str]]:
     primitive_map = {
         "bool": "syft.lib.python.Bool",
         "complex": "syft.lib.python.Complex",
@@ -300,6 +301,19 @@ def _map2syft_types(
         "str": "syft.lib.python.String",
         "tuple": "syft.lib.python.Tuple",
     }
+    if isinstance(methods, dict):
+        for func in methods:
+            return_type = methods[func]
+            if return_type.startswith("Union"):
+                types = return_type[5:].strip("[]").split(",")
+                for i in range(len(types)):
+                    if types[i] in primitive_map:
+                        types[i] = primitive_map[types[i]]
+                methods[func] = UnionGenerator[tuple(types)]
+            elif return_type in primitive_map:
+                methods[func] = primitive_map[return_type]
+        return methods
+
     for i, (func, return_type) in enumerate(methods):
         if return_type.startswith("Union"):
             types = return_type[5:].strip("[]").split(",")
@@ -316,13 +330,17 @@ def _map2syft_types(
 def _create_support_ast(
     modules: TypeList[TypeTuple[str, TypeAny]],
     classes: TypeList[TypeTuple[str, str, TypeAny]],
-    methods: TypeList[TypeTuple[str, str]],
+    methods: TypeUnion[TypeList[TypeTuple[str, str]], TypeDict[str, str]],
     client: TypeAny = None,
 ) -> Globals:
     ast = Globals(client=client)
     add_modules(ast, modules)
     add_classes(ast, classes)
-    add_methods(ast, methods)
+
+    if isinstance(methods, dict):
+        add_methods_dict(ast, methods)
+    else:
+        add_methods(ast, methods)
 
     for klass in ast.classes:
         klass.create_pointer_class()

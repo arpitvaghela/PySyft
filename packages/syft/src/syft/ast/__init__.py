@@ -61,6 +61,7 @@ meaning that this node is essentially a "leaf". This node can perform get remote
 
 # stdlib
 from typing import Any as TypeAny
+from typing import Dict as TypeDict
 from typing import List as TypeList
 from typing import Tuple as TypeTuple
 from typing import Union
@@ -186,6 +187,24 @@ def add_methods(
             path=path_list,
             index=len(path_list) - 1,
             return_type_name=return_type,
+        )
+
+
+def add_methods_dict(ast: globals.Globals, methods: TypeDict[str, str]) -> None:
+    """Parse a Dict of methods and register each method and its corresponding object in the AST path.
+
+    Args:
+        ast: The global AST.
+        paths: A `dict` of methods, with method's path and return type as key value pair.
+    """
+    for path in methods:
+        if deny(path):
+            warning(f"WARN: {path} denied. Cannot be added to AST.", print=True)
+            continue
+        parent = get_parent(path, ast)
+        path_list = path.split(".")
+        parent.add_path(
+            path=path_list, index=len(path_list) - 1, return_type_name=methods[path]
         )
 
 
