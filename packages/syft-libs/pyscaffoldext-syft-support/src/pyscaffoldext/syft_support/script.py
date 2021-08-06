@@ -53,7 +53,7 @@ def set_classes(
 ) -> TypeAny:
 
     classes_set = set()
-    allowlist: TypeList[str,str] = []
+    allowlist: TypeDict[str,str] = {}
     # print(f'Len of modules_list {len(modules_list)}')
     for i in modules_list:
         try:
@@ -91,7 +91,7 @@ def set_classes(
                     if is_error:
                         debug_list.append(string)
                     else:
-                        allowlist.append((f"{i}.{t.__name__}",string))
+                        allowlist[f"{i}.{t.__name__}"] = string
         except Exception as e:
             # print(f"set_classes: module_name = {i}: exception occoured \n\t{e}")
             debug_list.append(
@@ -183,7 +183,7 @@ def dict_allowlist(
     missing_return = 0
     # for i in classes_set:
     debug_list: TypeList[str] = list()
-    allowlist: TypeList[TypeTuple[str,str]] = []
+    allowlist: TypeDict[str,str] = {}
     list_nb: TypeList[TypeAny] = list()
     class_ = class_import(i)
     if_class_added = False
@@ -227,7 +227,7 @@ def dict_allowlist(
                     )
 
                     list_nb.append(nbf.v4.new_code_cell(code))
-                allowlist.append((f"${i}.${t.__name__}", string))
+                allowlist[f"${i}.${t.__name__}"] = string
     return allowlist, debug_list, methods_error_count, missing_return, list_nb
 
 
@@ -310,7 +310,7 @@ def generate_package_support(
     classlist = list(classes_set)
     classlist.sort()
     modules_list.sort()
-    allowlist.sort()
+    # TODO: sort allowlist: TypeDict[str,str]
 
     package_support["classes"] = classlist
     package_support["modules"] = modules_list
