@@ -692,11 +692,7 @@ class Class(Callable):
             return
 
         _path: List[str] = path.split(".") if isinstance(path, str) else path
-        try:
-            attr_ref = getattr(self.object_ref, _path[index])
-        except AttributeError as e:
-            print(e)
-            return
+        attr_ref = getattr(self.object_ref, _path[index])
         class_is_enum = isinstance(self.object_ref, EnumMeta)
 
         if (

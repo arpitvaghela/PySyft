@@ -75,7 +75,6 @@ from . import klass  # noqa: F401
 from . import module  # noqa: F401
 from . import property  # noqa: F401
 from . import static_attr  # noqa: F401
-from ..logger import warning
 from .denylist import deny
 
 
@@ -127,19 +126,15 @@ def add_modules(
 
         parent = get_parent(target_module, ast)
         attr_name = target_module.rsplit(".", 1)[-1]
-        try:
-            parent.add_attr(
-                attr_name=attr_name,
-                attr=module.Module(
-                    path_and_name=target_module,
-                    object_ref=ref,
-                    return_type_name="",
-                    client=ast.client,
-                ),
-            )
-        except AttributeError as e:
-            print(target_module, attr_name)
-            raise e
+        parent.add_attr(
+            attr_name=attr_name,
+            attr=module.Module(
+                path_and_name=target_module,
+                object_ref=ref,
+                return_type_name="",
+                client=ast.client,
+            ),
+        )
 
 
 def add_classes(
@@ -154,7 +149,6 @@ def add_classes(
     """
     for path, return_type, ref in paths:
         if deny(path):
-            warning(f"{path} denied. Cannot be added to AST.", print=True)
             continue
         parent = get_parent(path, ast)
         attr_name = path.rsplit(".", 1)[-1]
@@ -181,8 +175,10 @@ def add_methods(
         paths: A list of methods, each of which is a tuple of the method's path and its return type.
     """
     for path, return_type in paths:
+        if return_type in ["_syft_missing", "_syft_return_absent"]:
+            continue
+
         if deny(path):
-            warning(f"WARN: {path} denied. Cannot be added to AST.", print=True)
             continue
         parent = get_parent(path, ast)
         path_list = path.split(".")

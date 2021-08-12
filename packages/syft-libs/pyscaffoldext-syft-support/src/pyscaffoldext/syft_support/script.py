@@ -97,7 +97,7 @@ def set_classes(
                     if is_error:
                         debug_list.append(string)
                     else:
-                        allowlist.append((f"{i}.{t.__name__}", string))
+                        allowlist.append((f"{i}.{ax}", string))
         except Exception as e:
             # print(f"set_classes: module_name = {i}: exception occoured \n\t{e}")
             debug_list.append(
@@ -258,7 +258,7 @@ def dict_allowlist(
                     ).replace("\t", " " * 4)
 
                     list_nb.append(nbf.v4.new_code_cell(code))
-                allowlist.append((i + "." + t.__name__, string))
+                allowlist.append((i + "." + ax, string))
 
         elif isinstance(t, property):
             missing_return += 1
@@ -361,6 +361,8 @@ def generate_package_support(
 
         debug_list.extend(debug_list_i)
         tmp_class = class_import(class_)
+
+        # original path will be the path to source module
         try:
             original_path = tmp_class.__module__ + "." + tmp_class.__name__
         except AttributeError as e:
