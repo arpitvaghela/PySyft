@@ -272,6 +272,8 @@ def dict_allowlist(
             ).replace("\t", " " * 4)
 
             list_nb.append(nbf.v4.new_code_cell(code))
+            if i == "pandas.DataFrame":
+                print(f"{i}.{ax}")
             allowlist.append((f"{i}.{ax}", "_syft_missing"))
 
     return allowlist, debug_list, methods_error_count, missing_return, list_nb
