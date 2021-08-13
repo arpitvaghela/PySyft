@@ -252,7 +252,6 @@ def dict_allowlist(
                 if_class_added = True
 
             i_ = i.replace(".", "_")
-
             code = (
                 f"# {i}.{ax}\n"
                 f"try:\n"
@@ -273,6 +272,7 @@ def dict_allowlist(
             ).replace("\t", " " * 4)
 
             list_nb.append(nbf.v4.new_code_cell(code))
+            allowlist.append((f"{i}.{ax}", "_syft_missing"))
 
     return allowlist, debug_list, methods_error_count, missing_return, list_nb
 

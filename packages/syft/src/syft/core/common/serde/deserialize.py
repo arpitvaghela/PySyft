@@ -55,7 +55,13 @@ def _deserialize(
     if from_bytes:
         data_message = DataMessage()
         data_message.ParseFromString(blob)
-        obj_type = index_syft_by_module_name(fully_qualified_name=data_message.obj_type)
+        try:
+            obj_type = index_syft_by_module_name(
+                fully_qualified_name=data_message.obj_type
+            )
+        except Exception as e:
+            print(data_message.obj_type)
+            raise e
         get_protobuf_schema = getattr(obj_type, "get_protobuf_schema", None)
 
         if not callable(get_protobuf_schema):

@@ -1,1 +1,1 @@
-from . import series, frame, categorical_dtype, categorical
+from . import series, frame, categorical_dtype, categorical, datetimeindex

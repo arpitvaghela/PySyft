@@ -343,8 +343,6 @@ def _map2syft_types(
                 if types[i].lower() in primitive_map:
                     types[i] = primitive_map[types[i].lower()]
             union = UnionGenerator[tuple(types)]
-            if func == "pandas.DataFrame.__getitem__":
-                print(union)
             new_methods.append((func, union))
 
         elif return_type.lower() in primitive_map:
