@@ -282,6 +282,32 @@ def post_import_hook_third_party(module: TypeAny) -> None:
     load(module.__name__, ignore_warning=True)
 
 
+def chk_unsupported_unions(return_type: str):
+    unsupported = [
+        "Union[pandas.core.indexes.base.Index, List[Union[str, int]]]",
+        "Union[numpy.dtype, pandas.core.dtypes.base.ExtensionDtype, NoneType]",
+        "Union[Collection[~T], ~T]",
+        "Union[numpy.dtype, pandas.core.dtypes.base.ExtensionDtype]",
+        "Union[pandas.core.series.Series, str, bool, int, float, numpy.ndarray, list, object]",
+        "Union[pandas.core.series.Series, Tuple[pandas.core.series.Series, pandas.core.series.Series]]",
+        "Union[numpy.ndarray, Tuple[numpy.ndarray, numpy.ndarray]]",
+        "Union[str, pathlib.Path, IO[~AnyStr]]",
+        "Union[numpy.int64, numpy.ndarray]",
+        "Union[pandas.io.pytables.GenericFixed, pandas.io.pytables.Table]",
+        "Union[pandas.core.dtypes.base.ExtensionDtype, str, numpy.dtype, Type[Union[str, float, int, complex, bool]]]",
+        "Union[pandas.core.frame.DataFrame, Iterator[pandas.core.frame.DataFrame]]",
+        "Union[str, bool, int, float, numpy.ndarray, list, object]",
+        "Union[~DatetimeLikeScalar, pandas._libs.tslibs.nattype.NaTType]",
+        "Union[pandas.core.frame.DataFrame, pandas.io.stata.StataReader]",
+        "Union[NoneType, Type[pandas.core.dtypes.base.ExtensionDtype]]",
+        "Union[NoneType, ~FrameOrSeries]",
+        "Union[NoneType, Callable]",
+        "Union[NoneType, datetime.tzinfo]",
+        "Union[NoneType, Hashable]",
+    ]
+    return not return_type in unsupported
+
+
 def _map2syft_types(
     methods: TypeList[TypeTuple[str, str]]
 ) -> TypeList[TypeTuple[str, str]]:
@@ -293,25 +319,39 @@ def _map2syft_types(
         "int": "syft.lib.python.Int",
         # "Iterator":"syft.lib.python.Iterator",
         "list": "syft.lib.python.List",
-        "NoneType": "syft.lib.python._SyNone",
+        "nonetype": "syft.lib.python._SyNone",
         "range": "syft.lib.python.Range",
         "set": "syft.lib.python.Set",
         "slice": "syft.lib.python.Slice",
         "str": "syft.lib.python.String",
         "tuple": "syft.lib.python.Tuple",
     }
+    all_extra_types = set()
+    new_methods = []
     for i, (func, return_type) in enumerate(methods):
-        if return_type.startswith("Union"):
+        return_type = return_type.replace("typing.", "")
+        return_type = return_type.replace("Optional[", "Union[NoneType, ")
+
+        if return_type.startswith("Union") and chk_unsupported_unions(return_type):
             types = return_type[5:].strip("[]").split(",")
             types = [t.strip() for t in types]
+            all_extra_types = all_extra_types.union([return_type])
             for i in range(len(types)):
-                if types[i] in primitive_map:
-                    types[i] = primitive_map[types[i]]
-            methods[i] = (func, UnionGenerator[tuple(types)])
+                if types[i].lower() in primitive_map:
+                    types[i] = primitive_map[types[i].lower()]
+            union = UnionGenerator[tuple(types)]
+            if func == "pandas.DataFrame.__getitem__":
+                print(union)
+            new_methods.append((func, union))
 
-        elif return_type in primitive_map:
-            methods[i] = (func, primitive_map[return_type])
-    return methods
+        elif return_type.lower() in primitive_map:
+            new_methods.append((func, primitive_map[return_type.lower()]))
+        else:
+            new_methods.append((func, return_type))
+
+    for x in all_extra_types:
+        print(x)
+    return new_methods
 
 
 def _create_support_ast(

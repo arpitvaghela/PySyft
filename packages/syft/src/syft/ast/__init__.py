@@ -65,6 +65,9 @@ from typing import List as TypeList
 from typing import Tuple as TypeTuple
 from typing import Union
 
+# syft absolute
+from syft.logger import warning
+
 # syft relative
 from . import attribute  # noqa: F401
 from . import callable  # noqa: F401
@@ -126,15 +129,19 @@ def add_modules(
 
         parent = get_parent(target_module, ast)
         attr_name = target_module.rsplit(".", 1)[-1]
-        parent.add_attr(
-            attr_name=attr_name,
-            attr=module.Module(
-                path_and_name=target_module,
-                object_ref=ref,
-                return_type_name="",
-                client=ast.client,
-            ),
-        )
+        try:
+            parent.add_attr(
+                attr_name=attr_name,
+                attr=module.Module(
+                    path_and_name=target_module,
+                    object_ref=ref,
+                    return_type_name="",
+                    client=ast.client,
+                ),
+            )
+        except AttributeError as e:
+            print(mod)
+            raise e
 
 
 def add_classes(
@@ -149,6 +156,7 @@ def add_classes(
     """
     for path, return_type, ref in paths:
         if deny(path):
+            warning(f"{path} Denied.", print=True)
             continue
         parent = get_parent(path, ast)
         attr_name = path.rsplit(".", 1)[-1]
@@ -179,6 +187,7 @@ def add_methods(
             continue
 
         if deny(path):
+            warning(f"{path} Denied.")
             continue
         parent = get_parent(path, ast)
         path_list = path.split(".")

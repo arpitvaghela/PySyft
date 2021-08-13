@@ -121,10 +121,15 @@ def get_run_class_method(attr_path_and_name: str) -> CallableT:
         # so we ask lib_ast for the return type name that matches out
         # attr_path_and_name and then use that to get the actual pointer klass
         # then set the result to that pointer klass
-        return_type_name = __self.client.lib_ast.query(
-            attr_path_and_name
-        ).return_type_name
-        resolved_pointer_type = __self.client.lib_ast.query(return_type_name)
+        try:
+            return_type_name = __self.client.lib_ast.query(
+                attr_path_and_name
+            ).return_type_name
+            resolved_pointer_type = __self.client.lib_ast.query(return_type_name)
+        except Exception as e:
+            print(attr_path_and_name)
+            raise e
+
         result = resolved_pointer_type.pointer_type(client=__self.client)
 
         # QUESTION can the id_at_location be None?

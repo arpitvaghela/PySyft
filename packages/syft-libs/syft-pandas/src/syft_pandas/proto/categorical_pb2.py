@@ -21,11 +21,11 @@ from syft.proto.lib.python import list_pb2 as proto_dot_lib_dot_python_dot_list_
 
 DESCRIPTOR = _descriptor.FileDescriptor(
     name="proto/categorical.proto",
-    package="syft.lib.pandas",
+    package="pandas",
     syntax="proto3",
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x17proto/categorical.proto\x12\x0fsyft.lib.pandas\x1a%proto/core/common/common_object.proto\x1a\x1bproto/lib/python/list.proto"w\n\x16PandasCategoricalDtype\x12!\n\x02id\x18\x01 \x01(\x0b\x32\x15.syft.core.common.UID\x12)\n\ncategories\x18\x02 \x01(\x0b\x32\x15.syft.lib.python.List\x12\x0f\n\x07ordered\x18\x03 \x01(\x08"\x98\x01\n\x11PandasCategorical\x12!\n\x02id\x18\x01 \x01(\x0b\x32\x15.syft.core.common.UID\x12$\n\x05\x63odes\x18\x02 \x01(\x0b\x32\x15.syft.lib.python.List\x12)\n\ncategories\x18\x03 \x01(\x0b\x32\x15.syft.lib.python.List\x12\x0f\n\x07ordered\x18\x04 \x01(\x08\x62\x06proto3',
+    serialized_pb=b'\n\x17proto/categorical.proto\x12\x06pandas\x1a%proto/core/common/common_object.proto\x1a\x1bproto/lib/python/list.proto"w\n\x16PandasCategoricalDtype\x12!\n\x02id\x18\x01 \x01(\x0b\x32\x15.syft.core.common.UID\x12)\n\ncategories\x18\x02 \x01(\x0b\x32\x15.syft.lib.python.List\x12\x0f\n\x07ordered\x18\x03 \x01(\x08"\x98\x01\n\x11PandasCategorical\x12!\n\x02id\x18\x01 \x01(\x0b\x32\x15.syft.core.common.UID\x12$\n\x05\x63odes\x18\x02 \x01(\x0b\x32\x15.syft.lib.python.List\x12)\n\ncategories\x18\x03 \x01(\x0b\x32\x15.syft.lib.python.List\x12\x0f\n\x07ordered\x18\x04 \x01(\x08\x62\x06proto3',
     dependencies=[
         proto_dot_core_dot_common_dot_common__object__pb2.DESCRIPTOR,
         proto_dot_lib_dot_python_dot_list__pb2.DESCRIPTOR,
@@ -35,7 +35,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _PANDASCATEGORICALDTYPE = _descriptor.Descriptor(
     name="PandasCategoricalDtype",
-    full_name="syft.lib.pandas.PandasCategoricalDtype",
+    full_name="pandas.PandasCategoricalDtype",
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
@@ -43,7 +43,7 @@ _PANDASCATEGORICALDTYPE = _descriptor.Descriptor(
     fields=[
         _descriptor.FieldDescriptor(
             name="id",
-            full_name="syft.lib.pandas.PandasCategoricalDtype.id",
+            full_name="pandas.PandasCategoricalDtype.id",
             index=0,
             number=1,
             type=11,
@@ -62,7 +62,7 @@ _PANDASCATEGORICALDTYPE = _descriptor.Descriptor(
         ),
         _descriptor.FieldDescriptor(
             name="categories",
-            full_name="syft.lib.pandas.PandasCategoricalDtype.categories",
+            full_name="pandas.PandasCategoricalDtype.categories",
             index=1,
             number=2,
             type=11,
@@ -81,7 +81,7 @@ _PANDASCATEGORICALDTYPE = _descriptor.Descriptor(
         ),
         _descriptor.FieldDescriptor(
             name="ordered",
-            full_name="syft.lib.pandas.PandasCategoricalDtype.ordered",
+            full_name="pandas.PandasCategoricalDtype.ordered",
             index=2,
             number=3,
             type=8,
@@ -107,14 +107,14 @@ _PANDASCATEGORICALDTYPE = _descriptor.Descriptor(
     syntax="proto3",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=112,
-    serialized_end=231,
+    serialized_start=103,
+    serialized_end=222,
 )
 
 
 _PANDASCATEGORICAL = _descriptor.Descriptor(
     name="PandasCategorical",
-    full_name="syft.lib.pandas.PandasCategorical",
+    full_name="pandas.PandasCategorical",
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
@@ -122,7 +122,7 @@ _PANDASCATEGORICAL = _descriptor.Descriptor(
     fields=[
         _descriptor.FieldDescriptor(
             name="id",
-            full_name="syft.lib.pandas.PandasCategorical.id",
+            full_name="pandas.PandasCategorical.id",
             index=0,
             number=1,
             type=11,
@@ -141,7 +141,7 @@ _PANDASCATEGORICAL = _descriptor.Descriptor(
         ),
         _descriptor.FieldDescriptor(
             name="codes",
-            full_name="syft.lib.pandas.PandasCategorical.codes",
+            full_name="pandas.PandasCategorical.codes",
             index=1,
             number=2,
             type=11,
@@ -160,7 +160,7 @@ _PANDASCATEGORICAL = _descriptor.Descriptor(
         ),
         _descriptor.FieldDescriptor(
             name="categories",
-            full_name="syft.lib.pandas.PandasCategorical.categories",
+            full_name="pandas.PandasCategorical.categories",
             index=2,
             number=3,
             type=11,
@@ -179,7 +179,7 @@ _PANDASCATEGORICAL = _descriptor.Descriptor(
         ),
         _descriptor.FieldDescriptor(
             name="ordered",
-            full_name="syft.lib.pandas.PandasCategorical.ordered",
+            full_name="pandas.PandasCategorical.ordered",
             index=3,
             number=4,
             type=8,
@@ -205,8 +205,8 @@ _PANDASCATEGORICAL = _descriptor.Descriptor(
     syntax="proto3",
     extension_ranges=[],
     oneofs=[],
-    serialized_start=234,
-    serialized_end=386,
+    serialized_start=225,
+    serialized_end=377,
 )
 
 _PANDASCATEGORICALDTYPE.fields_by_name[
@@ -234,7 +234,7 @@ PandasCategoricalDtype = _reflection.GeneratedProtocolMessageType(
     {
         "DESCRIPTOR": _PANDASCATEGORICALDTYPE,
         "__module__": "proto.categorical_pb2"
-        # @@protoc_insertion_point(class_scope:syft.lib.pandas.PandasCategoricalDtype)
+        # @@protoc_insertion_point(class_scope:pandas.PandasCategoricalDtype)
     },
 )
 _sym_db.RegisterMessage(PandasCategoricalDtype)
@@ -245,7 +245,7 @@ PandasCategorical = _reflection.GeneratedProtocolMessageType(
     {
         "DESCRIPTOR": _PANDASCATEGORICAL,
         "__module__": "proto.categorical_pb2"
-        # @@protoc_insertion_point(class_scope:syft.lib.pandas.PandasCategorical)
+        # @@protoc_insertion_point(class_scope:pandas.PandasCategorical)
     },
 )
 _sym_db.RegisterMessage(PandasCategorical)

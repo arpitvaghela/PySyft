@@ -24,8 +24,12 @@ from .union import lazy_pairing
 @cached(cache={}, key=lambda path, lib_ast: hashkey(path))
 def solve_ast_type_functions(path: str, lib_ast: globals.Globals) -> KeysView:
     root = lib_ast
-    for path_element in path.split("."):
-        root = getattr(root, path_element)
+    try:
+        for path_element in path.split("."):
+            root = getattr(root, path_element)
+    except Exception as e:
+        print(path)
+        raise e
     return root.attrs.keys()
 
 
@@ -56,10 +60,14 @@ def get_allowed_functions(
         # TODO: a better way. Loot at https://github.com/OpenMined/PySyft/issues/5249
         # A way to walkaround the problem we can't `import torch.return_types` and
         # get it from `sys.modules`.
-        if parts[-2] == "return_types":
-            modu = getattr(sys.modules["torch"], "return_types")
-        else:
-            modu = sys.modules[".".join(parts[:-1])]
+        try:
+            if parts[-2] == "return_types":
+                modu = getattr(sys.modules["torch"], "return_types")
+            else:
+                modu = sys.modules[".".join(parts[:-1])]
+        except Exception as e:
+            print(path)
+            raise e
         return set(dir(getattr(modu, klass_name)))
 
     for union_type in union_types:

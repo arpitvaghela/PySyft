@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package syft.lib.pandas;
+package pandas;
 
 import "proto/core/common/common_object.proto";
 import "proto/lib/python/list.proto";

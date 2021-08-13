@@ -1,0 +1,140 @@
+xarray.core.dataset.Dataset
+typing.Callable[[~F], ~F]
+typing.Tuple[str, typing.Any]
+Union[int, str, float]
+typing.List[pandas.core.indexes.base.Index]
+typing.Union[int, float]
+typing.Optional[typing.Hashable]
+typing.Tuple[numpy.ndarray, typing.Union[numpy.dtype, pandas.core.dtypes.base.ExtensionDtype]]
+typing.Union[str, pathlib.Path, typing.IO[~AnyStr]]
+typing.Iterable[typing.Tuple[typing.Optional[typing.Hashable], pandas.core.series.Series]]
+typing.Type[pandas.core.arrays.numpy_.PandasArray]
+typing.Union[pandas.core.series.Series, str, bool, int, float, numpy.ndarray, list, object]
+collections.abc.KeysView
+typing.Union[numpy.dtype, pandas.core.dtypes.base.ExtensionDtype, NoneType]
+typing.Union[numpy.ndarray, int]
+typing.Union[pandas.core.series.Series, typing.Tuple[pandas.core.series.Series, pandas.core.series.Series]]
+typing.Dict[str, int]
+typing.Dict[str, typing.Union[int, str]]
+typing.Optional[datetime.tzinfo]
+typing.Type[pandas.core.arrays.boolean.BooleanArray]
+typing.Dict[int, typing.List[str]]
+typing.Callable[[pandas.core.arrays.sparse.array.SparseArray], pandas.core.arrays.sparse.array.SparseArray]
+typing.Tuple[typing.Optional[str], typing.Dict[str, str]]
+typing.Dict[str, typing.Dict[str, str]]
+int
+typing.Iterator[NoneType]
+typing.Optional[typing.Type[pandas.core.dtypes.base.ExtensionDtype]]
+typing.Tuple[int, int]
+typing.Tuple[typing.List[str], typing.List[typing.Union[str, typing.Callable[..., typing.Any]]]]
+dict
+typing.Dict[str, typing.Any]
+typing.Tuple[typing.Callable, typing.Tuple[typing.Callable, str]]
+typing.Union[numpy.int64, numpy.ndarray]
+_syft_return_absent
+float64
+Union[str, int]
+typing.Union[int, float, numpy.ndarray]
+typing.Tuple[bool, bool, bool]
+typing.Type[pandas.core.arrays.masked.BaseMaskedArray]
+typing.Iterable[str]
+typing.Tuple[typing.Union[int, numpy.ndarray], typing.Union[int, numpy.ndarray]]
+xarray.core.dataarray.DataArray
+typing.Union[~DatetimeLikeScalar, pandas._libs.tslibs.nattype.NaTType]
+_syft_missing
+bool
+dtype
+typing.Iterator[typing.Tuple[int, str]]
+typing.Tuple[numpy.ndarray, typing.Any]
+typing.Type[pandas.core.arrays.integer.IntegerArray]
+typing.Dict[str, typing.Union[bool, int, str, NoneType]]
+map
+typing.Tuple[pandas.core.indexes.base.Index, pandas.core.indexes.base.Index]
+typing.Tuple[numpy.ndarray, int]
+typing.Union[numpy.ndarray, pandas.core.arrays.sparse.array.SparseArray]
+typing.Union[str, bool, int, float, numpy.ndarray, list, object]
+list
+numpy.array
+typing.Callable[..., NoneType]
+Int64Array
+tuple
+typing.Tuple[bool, typing.Union[typing.Callable, str, typing.List[typing.Union[typing.Callable, str]], typing.Dict[typing.Optional[typing.Hashable], typing.Union[typing.Callable, str, typing.List[typing.Union[typing.Callable, str]]]], NoneType], typing.Optional[typing.List[str]], typing.Optional[typing.List[int]]]
+typing.List[pandas.core.internals.blocks.ExtensionBlock]
+typing.Type[pandas.core.arrays.string_.StringArray]
+typing.Type[pandas.core.dtypes.base.ExtensionDtype]
+typing.Union[str, typing.Tuple]
+typing.Dict[str, pandas.core.dtypes.generic.ABCSeries]
+typing.Union[pandas.core.indexes.base.Index, typing.List[typing.Union[str, int]]]
+typing.Tuple[numpy.ndarray, pandas.core.arrays.base.ExtensionArray]
+BooleanArray
+object
+collections.abc.ItemsView
+typing.Callable[[typing.Type[~_T]], typing.Type[~_T]]
+typing.Tuple[numpy.ndarray, typing.Union[numpy.ndarray, pandas.core.dtypes.generic.ABCIndex]]
+typing.Optional[pandas.core.frame.DataFrame]
+NoneType
+generator
+typing.Tuple[numpy.ndarray, numpy.ndarray]
+typing.Tuple[typing.List[typing.Tuple[str, ...]], typing.List[typing.Tuple[str, ...]]]
+typing.Union[numpy.ndarray, typing.Tuple[numpy.ndarray, numpy.ndarray]]
+typing.Iterable[typing.Tuple[typing.Optional[typing.Hashable], typing.Any]]
+typing.Dict[str, typing.Optional[str]]
+typing.List[pandas.core.internals.blocks.Block]
+typing.Callable[[typing.Any], typing.Optional[str]]
+typing.Union[pandas.core.series.Series, pandas.core.frame.DataFrame]
+typing.Tuple[<built-in function array>, <built-in function array>, int]
+typing.List[typing.List[str]]
+typing.Union[int, numpy.ndarray]
+typing.Union[pandas.core.frame.DataFrame, typing.Iterator[pandas.core.frame.DataFrame]]
+typing.List[int]
+typing.Sequence[typing.Any]
+typing.Tuple[dict, typing.List[str], typing.List[int]]
+typing.Dict[typing.Hashable, numpy.ndarray]
+typing.Tuple[numpy.ndarray, typing.Optional[typing.List[str]]]
+typing.Optional[~FrameOrSeries]
+set
+typing.Union[numpy.dtype, pandas.core.dtypes.base.ExtensionDtype]
+typing.Union[pandas.io.pytables.GenericFixed, pandas.io.pytables.Table]
+typing.Tuple[typing.Union[functools.partial, typing.Type[~FrameOrSeries]], typing.Optional[typing.Dict[str, int]]]
+typing.Tuple[typing.Union[numpy.dtype, pandas.core.dtypes.base.ExtensionDtype], typing.Any]
+typing.Union[pandas.core.dtypes.base.ExtensionDtype, str, numpy.dtype, typing.Type[typing.Union[str, float, int, complex, bool]]]
+typing.Union[int, slice, numpy.ndarray]
+typing.Optional[typing.Callable]
+typing.Optional[str]
+typing.Type[pandas.core.arrays.period.PeriodArray]
+typing.Dict[str, typing.Union[bool, str, NoneType]]
+numpy.recarray
+typing.Dict[str, typing.Union[str, int, float, bool, typing.List, typing.Dict, NoneType]]
+typing.List[typing.Tuple[typing.Callable, typing.Tuple, typing.Dict]]
+typing.Sequence[typing.Tuple[typing.Any, typing.Any]]
+typing.Callable[..., typing.Any]
+typing.Optional[numpy.ndarray]
+Union[str, int, float]
+bool_
+typing.Iterable[pandas.core.series.Series]
+typing.Tuple[typing.List[str], bool]
+typing.List[typing.Dict[int, int]]
+typing.List[typing.Tuple[str, typing.Union[str, int]]]
+float
+typing.Tuple[typing.Dict[str, typing.Any], str]
+typing.Tuple[numpy.ndarray, typing.Optional[numpy.ndarray], numpy.dtype, numpy.dtype, typing.Any]
+typing.Callable[[typing.Any], NoneType]
+int64
+typing.Tuple[str, bool]
+typing.Optional[pandas.core.series.Series]
+typing.Tuple[pandas.core.groupby.ops.BaseGrouper, typing.List[typing.Hashable], ~FrameOrSeries]
+typing.List[pandas.core.frame.DataFrame]
+typing.List[str]
+dict_keyiterator
+ndarray
+collections.abc.ValuesView
+typing.Tuple[int, str]
+typing.Tuple[typing.Union[typing.Hashable, slice], ...]
+typing.Union[typing.Collection[~T], ~T]
+bytes
+numpy.ndarray
+typing.Union[pandas.core.frame.DataFrame, pandas.io.stata.StataReader]
+typing.Iterator[~ArrayLike]
+list_iterator
+typing.Union[pandas.core.frame.DataFrame, pandas.core.series.Series]
+str

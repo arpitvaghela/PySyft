@@ -12,6 +12,7 @@ from typing import Tuple as TypeTuple
 
 # syft absolute
 import syft as sy
+from . import serde
 
 
 def read_package_support() -> TypeDict[str, TypeList[TypeTuple[TypeAny, ...]]]:
@@ -20,9 +21,15 @@ def read_package_support() -> TypeDict[str, TypeList[TypeTuple[TypeAny, ...]]]:
     ) as f:
         data = json.load(f)
 
-    modules: TypeList[TypeTuple[TypeAny, ...]] = [
-        (module_name, import_module(module_name)) for module_name in data["modules"]
-    ]
+    modules: TypeList[TypeTuple[TypeAny, ...]] = []
+    for module_name in data["modules"]:
+        try:
+            module_tuple = (module_name, import_module(module_name))
+        except ModuleNotFoundError as e:
+            print(e)
+            continue
+        modules.append(module_tuple)
+
     classes: TypeList[TypeTuple[TypeAny, ...]] = []
     for path in data["classes"]:
         if isinstance(path, list):
@@ -63,7 +70,7 @@ def get_serde() -> TypeList[TypeDict[str, TypeAny]]:
                 try:
                     serde = getattr(serde_module, "serde")
                 except AttributeError:
-                    print(f"WARN: No serde found in {module_path}")
+                    # print(f"WARN: No serde found in {module_path}")
                     continue
 
                 if isinstance(serde, Iterable) and not isinstance(serde, dict):

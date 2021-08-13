@@ -50,7 +50,7 @@ def proto2object(proto: PandasDataFrame_PB) -> pd.DataFrame:
 
 GenerateWrapper(
     wrapped_type=pd.DataFrame,
-    import_path="pandas.DataFrame",
+    import_path="pandas.core.frame.DataFrame",
     protobuf_scheme=PandasDataFrame_PB,
     type_object2proto=object2proto,
     type_proto2object=proto2object,
