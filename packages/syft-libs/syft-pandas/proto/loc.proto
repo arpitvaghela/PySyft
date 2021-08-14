@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pandas;
+
+import "proto/core/common/common_object.proto";
+import "proto/lib/python/string.proto";
+import "proto/series.proto";
+import "proto/frame.proto";
+
+message PandasLoc {
+  syft.core.common.UID id = 1;
+  syft.lib.python.String name = 2;
+  
+  oneof FrameOrSeries{
+      pandas.PandasSeries series = 3;
+      pandas.PandasDataFrame frame = 4;
+  }
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pandas;
+
+import "proto/core/common/common_object.proto";
+import "proto/series.proto";
+import "proto/frame.proto";
+
+message PandasIndex {
+  syft.core.common.UID id = 1;
+  pandas.PandasSeries data = 2;
+}
+
+message PandasMultiIndex {
+    syft.core.common.UID id =1;
+    pandas.PandasDataFrame frame = 2;
+}

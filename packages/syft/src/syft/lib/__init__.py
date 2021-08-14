@@ -18,10 +18,11 @@ import warnings
 from cachetools import cached
 from cachetools.keys import hashkey
 from packaging import version
+from syft.ast import dynamic_object
 import wrapt
 
 # relative
-from ..ast import add_classes
+from ..ast import add_classes, add_dynamic_objects
 from ..ast import add_methods
 from ..ast import add_modules
 from ..ast.globals import Globals
@@ -303,6 +304,7 @@ def chk_unsupported_unions(return_type: str):
         "Union[~DatetimeLikeScalar, pandas._libs.tslibs.nattype.NaTType]",
         "Union[pandas.core.frame.DataFrame, pandas.io.stata.StataReader]",
         "Union[NoneType, Type[pandas.core.dtypes.base.ExtensionDtype]]",
+        "Union[str, IO[~AnyStr], io.RawIOBase, io.BufferedIOBase, io.TextIOBase, _io.TextIOWrapper, mmap.mmap]",
         "Union[NoneType, ~FrameOrSeries]",
         "Union[NoneType, Callable]",
         "Union[NoneType, datetime.tzinfo]",
@@ -329,7 +331,6 @@ def _map2syft_types(
         "str": "syft.lib.python.String",
         "tuple": "syft.lib.python.Tuple",
     }
-    all_extra_types = set()
     new_methods = []
     for i, (func, return_type) in enumerate(methods):
         return_type = return_type.replace("typing.", "")
@@ -338,7 +339,6 @@ def _map2syft_types(
         if return_type.startswith("Union") and chk_unsupported_unions(return_type):
             types = return_type[5:].strip("[]").split(",")
             types = [t.strip() for t in types]
-            all_extra_types = all_extra_types.union([return_type])
             for i in range(len(types)):
                 if types[i].lower() in primitive_map:
                     types[i] = primitive_map[types[i].lower()]
@@ -350,8 +350,6 @@ def _map2syft_types(
         else:
             new_methods.append((func, return_type))
 
-    for x in all_extra_types:
-        print(x)
     return new_methods
 
 
@@ -359,12 +357,14 @@ def _create_support_ast(
     modules: TypeList[TypeTuple[str, TypeAny]],
     classes: TypeList[TypeTuple[str, str, TypeAny]],
     methods: TypeList[TypeTuple[str, str]],
+    dynamic_objects: TypeList[TypeTuple[str, str]],
     client: TypeAny = None,
 ) -> Globals:
     ast = Globals(client=client)
     add_modules(ast, modules)
     add_classes(ast, classes)
     add_methods(ast, methods)
+    add_dynamic_objects(ast, dynamic_objects)
 
     for klass in ast.classes:
         klass.create_pointer_class()
@@ -387,8 +387,13 @@ def add_lib_external(
 
     methods = _map2syft_types(config["methods"])
     # create_ast and update_ast function
+    dynamic_objects = config["dynamic_objects"] if "dynamic_objects" in config else {}
     create_ast = functools.partial(
-        _create_support_ast, config["modules"], config["classes"], methods
+        _create_support_ast,
+        config["modules"],
+        config["classes"],
+        methods,
+        dynamic_objects,
     )
     update_ast = functools.partial(generic_update_ast, lib, create_ast)
 
