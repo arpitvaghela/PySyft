@@ -11,7 +11,10 @@ from syft.lib.python.primitive_factory import PrimitiveFactory
 from syft.lib.python.string import String
 
 # relative
-from ..proto.family_pb2 import FamilyProto  # type: ignore
+from ...core.common.serde.serializable import serializable
+from ...proto.lib.statsmodels.family_pb2 import FamilyProto
+from ..python.primitive_factory import PrimitiveFactory
+from ..python.string import String
 
 FAMILY_2_STR: Dict[Type[statsmodels.genmod.families.family.Family], str] = {
     statsmodels.genmod.families.family.Binomial: "Binomial",
@@ -63,6 +66,7 @@ def proto2object(proto: FamilyProto) -> Type[statsmodels.genmod.families.family.
     return obj
 
 
+<<<<<<< HEAD:packages/syft-libs/syft-statsmodels/src/syft_statsmodels/serde/family.py
 serde = [
     {
         "wrapped_type": fam,
@@ -73,3 +77,13 @@ serde = [
     }
     for fam in FAMILY_2_STR.keys()
 ]
+=======
+for fam in FAMILY_2_STR.keys():
+    serializable(generate_wrapper=True)(
+        wrapped_type=fam,
+        import_path="statsmodels.genmod.families.family" + fam.__class__.__name__,
+        protobuf_scheme=FamilyProto,
+        type_object2proto=object2proto,
+        type_proto2object=proto2object,
+    )
+>>>>>>> upstream/dev:packages/syft/src/syft/lib/statsmodels/family.py

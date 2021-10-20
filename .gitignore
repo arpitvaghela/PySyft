@@ -7,7 +7,7 @@
 .mypy_cache
 .python-version
 .vscode/
-.tox/
+.tox/*
 
 # python stuff
 *__pycache__*
@@ -32,3 +32,11 @@ packages/hagrid/grid
 
 # vagrant
 .vagrant
+
+# helmcharts
+helm-charts/**/*.tgz
+helm-charts/**/*.lock
+.helm/**
+
+# docker cache
+.docker-cache/

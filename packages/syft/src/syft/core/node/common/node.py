@@ -24,10 +24,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# syft absolute
-from syft.core.node.common.node_manager.setup_manager import SetupManager
-from syft.core.node.common.node_table import Base
-
 # relative
 from ....lib import lib_ast
 from ....logger import debug
@@ -50,49 +46,46 @@ from ...io.route import Route
 from ...io.route import SoloRoute
 from ...io.virtual import create_virtual_connection
 from ..abstract.node import AbstractNode
-from ..common.node_service.auth import AuthorizationException
-from ..common.node_service.child_node_lifecycle.child_node_lifecycle_service import (
-    ChildNodeLifecycleService,
-)
-from ..common.node_service.get_repr.get_repr_service import GetReprService
-from ..common.node_service.heritage_update.heritage_update_service import (
-    HeritageUpdateService,
-)
-from ..common.node_service.msg_forwarding.msg_forwarding_service import (
-    SignedMessageWithReplyForwardingService,
-)
-from ..common.node_service.msg_forwarding.msg_forwarding_service import (
-    SignedMessageWithoutReplyForwardingService,
-)
-from ..common.node_service.node_service import EventualNodeServiceWithoutReply
-from ..common.node_service.node_service import ImmediateNodeServiceWithReply
-from ..common.node_service.object_action.obj_action_service import (
-    EventualObjectActionServiceWithoutReply,
-)
-from ..common.node_service.object_action.obj_action_service import (
-    ImmediateObjectActionServiceWithReply,
-)
-from ..common.node_service.object_action.obj_action_service import (
-    ImmediateObjectActionServiceWithoutReply,
-)
-from ..common.node_service.object_search.obj_search_service import (
-    ImmediateObjectSearchService,
-)
-from ..common.node_service.object_search_permission_update.obj_search_permission_service import (
-    ImmediateObjectSearchPermissionUpdateService,
-)
-from ..common.node_service.resolve_pointer_type.resolve_pointer_type_service import (
-    ResolvePointerTypeService,
-)
-from ..common.node_service.testing_services.repr_service import ReprService
-from ..common.node_service.testing_services.smpc_executor_service import (
-    SMPCExecutorService,
-)
 from .action.exception_action import ExceptionMessage
 from .action.exception_action import UnknownPrivateException
 from .client import Client
 from .metadata import Metadata
 from .node_manager.bin_obj_manager import BinObjectManager
+from .node_manager.setup_manager import SetupManager
+from .node_service.auth import AuthorizationException
+from .node_service.child_node_lifecycle.child_node_lifecycle_service import (
+    ChildNodeLifecycleService,
+)
+from .node_service.get_repr.get_repr_service import GetReprService
+from .node_service.heritage_update.heritage_update_service import HeritageUpdateService
+from .node_service.msg_forwarding.msg_forwarding_service import (
+    SignedMessageWithReplyForwardingService,
+)
+from .node_service.msg_forwarding.msg_forwarding_service import (
+    SignedMessageWithoutReplyForwardingService,
+)
+from .node_service.node_service import EventualNodeServiceWithoutReply
+from .node_service.node_service import ImmediateNodeServiceWithReply
+from .node_service.object_action.obj_action_service import (
+    EventualObjectActionServiceWithoutReply,
+)
+from .node_service.object_action.obj_action_service import (
+    ImmediateObjectActionServiceWithReply,
+)
+from .node_service.object_action.obj_action_service import (
+    ImmediateObjectActionServiceWithoutReply,
+)
+from .node_service.object_search.obj_search_service import ImmediateObjectSearchService
+from .node_service.object_search_permission_update.obj_search_permission_service import (
+    ImmediateObjectSearchPermissionUpdateService,
+)
+from .node_service.resolve_pointer_type.resolve_pointer_type_service import (
+    ResolvePointerTypeService,
+)
+from .node_service.testing_services.repr_service import ReprService
+from .node_service.testing_services.smpc_executor_service import SMPCExecutorService
+from .node_service.vpn.vpn_messages import VPNRegisterMessage
+from .node_table import Base
 
 # this generic type for Client bound by Client
 ClientT = TypeVar("ClientT", bound=Client)
@@ -155,7 +148,7 @@ class Node(AbstractNode):
             # If a DB engine isn't provided then
             if db_engine is None:
                 db_engine = create_engine("sqlite://", echo=False)
-                Base.metadata.create_all(db_engine)
+                Base.metadata.create_all(db_engine)  # type: ignore
 
             db = sessionmaker(bind=db_engine)()
 
@@ -163,6 +156,7 @@ class Node(AbstractNode):
         self.TableBase = TableBase
         self.db_engine = db_engine
         self.db = db
+        self.session = db
 
         # launch the tables in the database
         # Tudor: experimental
@@ -277,6 +271,9 @@ class Node(AbstractNode):
             SignedMessageWithoutReplyForwardingService()
         )
 
+        self.allowed_unsigned_messages = []
+        self.allowed_unsigned_messages.append(VPNRegisterMessage)
+
         # now we need to load the relevant frameworks onto the node
         self.lib_ast = lib_ast
         # The node needs to sign messages that it sends so that recipients know that it
@@ -307,6 +304,9 @@ class Node(AbstractNode):
         # For logging the number of messages received
         self.message_counter = 0
 
+    def post_init(self) -> None:
+        debug(f"> Creating {self.pprint}")
+
     def set_node_uid(self) -> None:
         try:
             setup = self.setup.first()
@@ -333,7 +333,11 @@ class Node(AbstractNode):
     def icon(self) -> str:
         return "📍"
 
-    def get_client(self, routes: Optional[List[Route]] = None) -> ClientT:
+    def get_client(
+        self,
+        routes: Optional[List[Route]] = None,
+        signing_key: Optional[SigningKey] = None,
+    ) -> ClientT:
         if not routes:
             conn_client = create_virtual_connection(node=self)
             solo = SoloRoute(destination=self.target_id, connection=conn_client)
@@ -348,7 +352,7 @@ class Node(AbstractNode):
             domain=self.domain,
             device=self.device,
             vm=self.vm,
-            signing_key=None,  # DO NOT PASS IN A SIGNING KEY!!! The client generates one.
+            signing_key=signing_key,  # If no signing_key is passed, the client generates one.
             verify_key=None,  # DO NOT PASS IN A VERIFY KEY!!! The client generates one.
         )
 
@@ -408,12 +412,13 @@ class Node(AbstractNode):
     def recv_immediate_msg_with_reply(
         self, msg: SignedImmediateSyftMessageWithReply
     ) -> SignedImmediateSyftMessageWithoutReply:
+        contents = getattr(msg, "message", msg)
         # exceptions can be easily triggered which break any WebRTC loops
         # so we need to catch them here and respond with a special exception
         # message reply
         try:
             debug(
-                f"> Received with Reply {msg.message.pprint} {msg.message.id} @ {self.pprint}"
+                f"> Received with Reply {contents.pprint} {contents.id} @ {self.pprint}"
             )
             # try to process message
             response = self.process_message(
@@ -421,6 +426,7 @@ class Node(AbstractNode):
             )
 
         except Exception as e:
+            print(type(e), e)
             error(e)
             public_exception: Exception
             if isinstance(e, AuthorizationException):
@@ -433,8 +439,8 @@ class Node(AbstractNode):
                 )
             try:
                 # try printing a useful message
-                private_log_msg += f" by {type(msg.message)} "
-                private_log_msg += f"from {msg.message.reply_to}"  # type: ignore
+                private_log_msg += f" by {type(contents)} "
+                private_log_msg += f"from {contents.reply_to}"  # type: ignore
             except Exception:
                 error("Unable to format the private log message")
                 pass
@@ -443,8 +449,8 @@ class Node(AbstractNode):
 
             # send the public exception back
             response = ExceptionMessage(
-                address=msg.message.reply_to,  # type: ignore
-                msg_id_causing_exception=msg.message.id,
+                address=contents.reply_to,  # type: ignore
+                msg_id_causing_exception=contents.id,
                 exception_type=type(public_exception),
                 exception_msg=str(public_exception),
             )
@@ -462,15 +468,17 @@ class Node(AbstractNode):
     def recv_immediate_msg_without_reply(
         self, msg: SignedImmediateSyftMessageWithoutReply
     ) -> None:
-        debug(
-            f"> Received without Reply {msg.message.pprint} {msg.message.id} @ {self.pprint}"
-        )
+        contents = getattr(msg, "message", msg)
+        if contents:
+            debug(
+                f"> Received without Reply {contents.pprint} {contents.id} @ {self.pprint}"
+            )
 
         self.process_message(msg=msg, router=self.immediate_msg_without_reply_router)
         try:
             pass
         except Exception as e:
-            error(f"Exception processing {msg.message}. {e}")
+            error(f"Exception processing {contents}. {e}")
             # public_exception: Exception
             if isinstance(e, DuplicateRequestException):
                 private_log_msg = "An DuplicateRequestException has been triggered"
@@ -482,8 +490,8 @@ class Node(AbstractNode):
                 # )
             try:
                 # try printing a useful message
-                private_log_msg += f" by {type(msg.message)} "
-                private_log_msg += f"from {msg.message.reply_to}"  # type: ignore
+                private_log_msg += f" by {type(contents)} "
+                private_log_msg += f"from {contents.reply_to}"  # type: ignore
             except Exception:
                 error("Unable to format the private log message")
                 pass
@@ -523,37 +531,41 @@ class Node(AbstractNode):
     def process_message(
         self, msg: SignedMessage, router: dict
     ) -> Union[SyftMessage, None]:
-        print(msg.message)
         self.message_counter += 1
-
-        debug(f"> Processing 📨 {msg.pprint} @ {self.pprint} {msg.message}")
+        contents = getattr(msg, "message", msg)  # in the event the message is unsigned
+        debug(f"> Processing 📨 {msg.pprint} @ {self.pprint} {contents}")
         if self.message_is_for_me(msg=msg):
             debug(
                 f"> Recipient Found {msg.pprint}{msg.address.target_emoji()} == {self.pprint}"
             )
-            # Process Message here
-            if not msg.is_valid:
+
+            # only a small number of messages are allowed to be unsigned otherwise
+            # they need to be valid
+            if type(msg) not in self.allowed_unsigned_messages and not msg.is_valid:  # type: ignore
                 error(f"Message is not valid. {msg}")
                 traceback_and_raise(Exception("Message is not valid."))
 
+            # Process Message here
             try:  # we use try/except here because it's marginally faster in Python
-                service = router[type(msg.message)]
-                print(service)
+                service = router[type(contents)]
             except KeyError as e:
                 log = (
                     f"The node {self.id} of type {type(self)} cannot process messages of type "
-                    + f"{type(msg.message)} because there is no service running to process it."
+                    + f"{type(contents)} because there is no service running to process it."
                     + f"{e}"
                 )
                 error(log)
                 self.ensure_services_have_been_registered_error_if_not()
                 traceback_and_raise(KeyError(log))
 
-            result = service.process(
-                node=self,
-                msg=msg.message,
-                verify_key=msg.verify_key,
-            )
+            if type(msg) in self.allowed_unsigned_messages:  # type: ignore
+                result = service.process(node=self, msg=contents, verify_key=None)
+            else:
+                result = service.process(
+                    node=self,
+                    msg=contents,
+                    verify_key=msg.verify_key,
+                )
             return result
 
         else:
